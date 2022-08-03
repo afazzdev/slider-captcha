@@ -1,5 +1,5 @@
-import sharp from "sharp";
-import { randInt, puzzlePieceSvg, backgroundSvg } from "./generate";
+import sharp from 'sharp';
+import { randInt, puzzlePieceSvg, backgroundSvg } from './generate';
 
 const sizes = {
   WIDTH: 250,
@@ -12,10 +12,11 @@ const createCaptcha = ({
   image = Buffer.from(backgroundSvg(sizes.WIDTH, sizes.HEIGHT)),
   distort = false,
   rotate = false,
-  fill = "#000",
-  stroke = "#fff",
-  strokeWidth = ".4",
-  opacity = "0.5",
+  fill = '#000',
+  stroke = '#fff',
+  strokeWidth = '.4',
+  opacity = '0.5',
+  // @ts-ignore
   createPuzzleSvg,
 } = {}) => {
   const seed = randInt();
@@ -38,7 +39,7 @@ const createCaptcha = ({
           strokeWidth,
           opacity,
           seed,
-        })
+        }),
   );
   const mask = Buffer.from(
     createPuzzleSvg
@@ -47,19 +48,19 @@ const createCaptcha = ({
           distort,
           strokeWidth,
           seed,
-          fill: "#fff",
-          stroke: "#fff",
-          opacity: "1",
+          fill: '#fff',
+          stroke: '#fff',
+          opacity: '1',
         })
       : puzzlePieceSvg({
           rotate,
           distort,
           seed,
           strokeWidth,
-          fill: "#fff",
-          stroke: "#fff",
-          opacity: "1",
-        })
+          fill: '#fff',
+          stroke: '#fff',
+          opacity: '1',
+        }),
   );
   const outline = Buffer.from(
     createPuzzleSvg
@@ -69,8 +70,8 @@ const createCaptcha = ({
           stroke,
           strokeWidth,
           seed,
-          fill: "none",
-          opacity: "1",
+          fill: 'none',
+          opacity: '1',
         })
       : puzzlePieceSvg({
           rotate,
@@ -78,20 +79,20 @@ const createCaptcha = ({
           seed,
           stroke,
           strokeWidth,
-          fill: "none",
-          opacity: "1",
-        })
+          fill: 'none',
+          opacity: '1',
+        }),
   );
   const location = {
     // Solution for slider
     left: randInt(
       sizes.PUZZLE + sizes.PADDING,
-      sizes.WIDTH - (sizes.PUZZLE + sizes.PADDING)
+      sizes.WIDTH - (sizes.PUZZLE + sizes.PADDING),
     ),
     // Vertical offset
     top: randInt(sizes.PADDING, sizes.HEIGHT - (sizes.PUZZLE + sizes.PADDING)),
   };
-  return new Promise((resolve) => {
+  return new Promise(() => {
     const ins = sharp(image).resize({
       width: sizes.WIDTH,
       height: sizes.HEIGHT,
@@ -100,7 +101,7 @@ const createCaptcha = ({
       .composite([
         {
           input: overlay,
-          blend: "over",
+          blend: 'over',
           top: location.top,
           left: location.left,
         },
@@ -112,13 +113,13 @@ const createCaptcha = ({
           .composite([
             {
               input: mask,
-              blend: "dest-in",
+              blend: 'dest-in',
               top: location.top,
               left: location.left,
             },
             {
               input: outline,
-              blend: "over",
+              blend: 'over',
               top: location.top,
               left: location.left,
             },
@@ -133,15 +134,13 @@ const createCaptcha = ({
           })
           .png()
           .toBuffer()
-          .then((slider) => {
-            return {
+          .then((slider) => ({
               data: {
                 background,
                 slider,
               },
               solution: location.left,
-            };
-          });
+            }));
       });
   });
 };
